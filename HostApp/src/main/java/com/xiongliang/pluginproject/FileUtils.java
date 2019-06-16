@@ -2,6 +2,7 @@ package com.xiongliang.pluginproject;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.util.Log;
 
 import java.io.Closeable;
 import java.io.File;
@@ -11,7 +12,7 @@ import java.io.InputStream;
 
 public class FileUtils {
     /**
-     * 将 Assets 文件复制到 /data/data/files 下面
+     * 将 Assets 文件复制到 /data/data/aap/files 下面
      * @param context
      * @param sourceName
      */
@@ -35,6 +36,7 @@ public class FileUtils {
             closeSilently(is);
             closeSilently(fos);
         }
+        Log.i("msg","拷贝成功");
     }
 
     private static void closeSilently(Closeable closeable) {
