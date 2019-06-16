@@ -39,15 +39,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * 加载插件
+     * 加载插件apk中dex 文件
      */
     public void loadPlugin(){
         File extractFile = this.getFileStreamPath("plugin1-debug.apk");
         String dexPath = extractFile.getPath();
         File fileRelease =  getDir("dex",0);
         dexClassLoader = new DexClassLoader(dexPath,fileRelease.getAbsolutePath(),null,getClassLoader());
-
-
     }
 
     /**
