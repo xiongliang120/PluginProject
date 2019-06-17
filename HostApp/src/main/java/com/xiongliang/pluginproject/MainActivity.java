@@ -8,6 +8,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import com.xiongliang.pluginlibrary.IBean;
 
@@ -16,65 +18,65 @@ import java.io.File;
 import dalvik.system.DexClassLoader;
 
 public class MainActivity extends AppCompatActivity {
-    private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static String[] PERMISSIONS_STORAGE = {
-            "android.permission.READ_EXTERNAL_STORAGE",
-            "android.permission.WRITE_EXTERNAL_STORAGE" };
+    private Button loadClassButton;
+    private Button loadResourceButton;
 
-    private DexClassLoader dexClassLoader;
+
+   PluginClassLoadUtil pluginClassLoadUtil;
+   PluginResourceLoadUtil pluginResourceLoadUtil;
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(newBase);
-//        checkPermission();
         //将Assets中插件apk 拷贝
         FileUtils.extractAssets(this,"plugin1-debug.apk");
+        pluginClassLoadUtil = new PluginClassLoadUtil();
+        pluginResourceLoadUtil = new PluginResourceLoadUtil();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        loadPlugin();
-        loadClass("com.xiongliang.plugin1.Bean");
+        loadClassButton = findViewById(R.id.plugin_class);
+        loadResourceButton = findViewById(R.id.plugin_resource);
+
+        loadClassButton.setOnClickListener(clickListener);
+        loadResourceButton.setOnClickListener(clickListener);
+
+
+
     }
 
-    /**
-     * 加载插件apk中dex 文件
-     */
-    public void loadPlugin(){
-        File extractFile = this.getFileStreamPath("plugin1-debug.apk");
-        String dexPath = extractFile.getPath();
-        File fileRelease =  getDir("dex",0);
-        dexClassLoader = new DexClassLoader(dexPath,fileRelease.getAbsolutePath(),null,getClassLoader());
-    }
-
-    /**
-     * 加载插件中任何类
-     */
-    public void loadClass(String className){
-        try{
-            //加载指定类
-            Class beanClass = dexClassLoader.loadClass(className);
-            Object beanObject = beanClass.newInstance();
-
-            IBean bean = (IBean) beanObject;
-            bean.setName("熊亮");
-            Log.i("msg","打印名字="+bean.getName());
-        }catch (Exception e){
-            e.printStackTrace();
+    View.OnClickListener clickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            int id = view.getId();
+            switch (id){
+                case R.id.plugin_class:
+                    testLoadClass();
+                    break;
+                case R.id.plugin_resource:
+                    loadResource();
+                    break;
+            }
         }
+    };
+
+
+    public void testLoadClass(){
+        pluginClassLoadUtil.loadPlugin(this);
+        pluginClassLoadUtil.loadClass("com.xiongliang.plugin1.Bean");
+    }
+
+    public void loadResource(){
+        pluginResourceLoadUtil.loadResources(this,"plugin1-debug.apk");
+        String pluginName = pluginResourceLoadUtil.getString(R.string.app_name);
+        Log.i("msg","打印插件名字="+pluginName);
+        pluginClassLoadUtil.loadPlugin(this);
+        pluginClassLoadUtil.loadClass("com.xiongliang.plugin1.ResourceUtil",this);
+
     }
 
 
-    //读写权限
-    private void checkPermission() {
-        int permission = ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
-            ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE,
-                    REQUEST_EXTERNAL_STORAGE);
-        }
-    }
 }
