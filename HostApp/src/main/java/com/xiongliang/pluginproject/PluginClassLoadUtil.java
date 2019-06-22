@@ -39,21 +39,6 @@ public class PluginClassLoadUtil {
         }
     }
 
-    /** 加载插件中
-     *
-     * @param className
-     * @param paramValue
-     */
-    public void loadClass(String className,Context paramValue){
-        try{
-            //加载指定类
-            Class beanClass = dexClassLoader.loadClass(className);
-            Object beanObject = beanClass.newInstance();
-            Method method = beanClass.getDeclaredMethod("getStringForResId",Context.class);
-            method.invoke(beanObject,paramValue);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
+
 
 }
