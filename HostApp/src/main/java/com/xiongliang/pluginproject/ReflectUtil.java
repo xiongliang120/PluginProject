@@ -25,6 +25,20 @@ public class ReflectUtil {
         return null;
     }
 
+
+    public static Object createObject(Class clazz,Class[] paraType, Object[] paraValues){
+        try{
+            Constructor c2 = clazz.getDeclaredConstructor(paraType);
+            c2.setAccessible(true);
+            Object object = c2.newInstance(paraValues);
+            return object;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
     /**
      * 反射调用实例方法
      * @param obj
@@ -89,6 +103,19 @@ public class ReflectUtil {
         return null;
     }
 
+    public static Object getFieldObject(Class clazz, Object obj, String fieldName){
+        try{
+            Field field = clazz.getDeclaredField(fieldName);
+            field.setAccessible(true);
+
+            Object fieldObject = field.get(obj);
+            return fieldObject;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     public static Object getFieldObject(Object obj, String fieldName){
         try{
@@ -133,6 +160,7 @@ public class ReflectUtil {
     }
 
 
+
     /**
      * 反射设置实例字段值
      * @param obj
@@ -149,6 +177,28 @@ public class ReflectUtil {
         }
     }
 
+
+    public static void setFileObject( Object obj, String fieldName, Object fieldValue){
+        try{
+            Field field = obj.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            field.set(obj,fieldValue);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+
+//    public static void setFileObject(Class mClass, Object obj, String fieldName, Object[] fieldValue){
+//        try{
+//            Field field = mClass.getDeclaredField(fieldName);
+//            field.setAccessible(true);
+//            field.set(obj,fieldValue);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//    }
 
 
 
